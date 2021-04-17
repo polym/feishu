@@ -16,10 +16,10 @@ const (
 type MessageTag string
 
 const (
-	MessageTagText  = "text"
-	MessageTagLink  = "a"
-	MessageTagAt    = "at"
-	MessageTagImage = "img"
+	MessageTagText  MessageTag = "text"
+	MessageTagLink  MessageTag = "a"
+	MessageTagAt    MessageTag = "at"
+	MessageTagImage MessageTag = "img"
 )
 
 type ReceiverKind string
@@ -100,7 +100,7 @@ func (m Message) MarshalJSON() ([]byte, error) {
 func SendMessage(p transport.Transport, m Message) error {
 	req := &transport.Request{
 		Method:      "POST",
-		Url:         "https://open.feishu.cn/open-apis/im/v1/messages?receive_id_type=" + m.ReceiverKind,
+		Url:         "https://open.feishu.cn/open-apis/im/v1/messages?receive_id_type=" + string(m.ReceiverKind),
 		ContentType: "application/json",
 		BodySpec:    m,
 	}
