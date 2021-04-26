@@ -116,7 +116,6 @@ func (app *App) Do(req *transport.Request, v interface{}, kind transport.AuthKin
 }
 
 func (app *App) do(req *http.Request, v interface{}, kind transport.AuthKind) error {
-	// TODO()
 	switch kind {
 	case transport.AuthKindTenant:
 		token, err := app.GetTenantAccessToken()

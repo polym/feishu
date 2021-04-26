@@ -2,6 +2,7 @@ package imchat
 
 import (
 	"encoding/json"
+	"fmt"
 
 	"github.com/polym/feishu/internal/transport"
 )
@@ -47,7 +48,6 @@ type MessageContent interface {
 }
 
 type MessagePostContent struct {
-	Text    string          `json:"text"`
 	Title   string          `json:"title"`
 	Content [][]MessageWord `json:"content"`
 }
@@ -101,6 +101,34 @@ func SendMessage(p transport.Transport, m Message) error {
 	req := &transport.Request{
 		Method:      "POST",
 		Url:         "https://open.feishu.cn/open-apis/im/v1/messages?receive_id_type=" + string(m.ReceiverKind),
+		ContentType: "application/json",
+		BodySpec:    m,
+	}
+	return p.Do(req, nil, transport.AuthKindTenant)
+}
+
+type GetChatMessagesOptions struct {
+	ContainerIdType string
+	ContainerId     string
+	StartTime       int
+	EndTime         int
+	PageSize        int
+	PageToken       string
+}
+
+func GetChatMessages(p transport.Transport, opt GetChatMessagesOptions) error {
+	req := &transport.Request{
+		Method: "GET",
+		Url: fmt.Sprintf("https://open.feishu.cn/open-apis/im/v1/messages?container_id_type=%s&container_id=%s&start_time=%d&end_time=%d&page_size=%d&page_token=%s",
+			opt.ContainerIdType, opt.ContainerId, opt.StartTime, opt.EndTime, opt.PageSize, opt.PageToken),
+	}
+	return p.Do(req, nil, transport.AuthKindTenant)
+}
+
+func ReplyMessage(p transport.Transport, msgId string, m Message) error {
+	req := &transport.Request{
+		Method:      "POST",
+		Url:         fmt.Sprintf("https://open.feishu.cn/open-apis/im/v1/messages/%s/reply", msgId),
 		ContentType: "application/json",
 		BodySpec:    m,
 	}
